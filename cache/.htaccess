@@ -1,0 +1,4 @@
+ErrorDocument 404 "Not Found
+AddType "text/javascript" .json
+# ExpiresActive on
+# ExpiresDefault "now"

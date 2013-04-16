@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>my feedFilter: Freelance Jobs</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="//twitter.github.io/bootstrap/assets/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="//twitter.github.io/bootstrap/assets/css/bootstrap-responsive.css" />
+        <!-- IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <style type="text/css">
+#main-wrap {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+#authForm {
+    margin-top: 20px;
+}
+#subscrForm {
+    margin: 6px;
+}
+.navbar .btn-group {
+    margin-top: 0;
+}
+#items .item {
+    background-color: #EEEEEE;
+    border-radius: 4px;
+    padding: 5px;
+    margin-top: 10px;
+    display:none;
+}
+#profileForm textarea {
+    width: 100%;
+}
+#alert h3 {
+    color: red;
+}
+        </style>
+    </head>
+    <body>
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="brand" href="https://github.com/hindmost/myfeedfilter" target="_blank">
+                        <img src="assets/logo.png"> my feedFilter
+                    </a>
+                    <ul class="nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" id="acct" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-user icon-white"></i>
+                                <b><span id="acctId">Not logged in</span></b>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="acct">
+                                <li role="presentation" class="acct-unlogged auth">
+                                    <a role="menuitem" tabindex="-1" href="#login" data-toggle="modal">Log in</a>
+                                </li>
+                                <li role="presentation" class="acct-unlogged auth">
+                                    <a role="menuitem" tabindex="-1" href="#signup" data-toggle="modal">Sign up</a>
+                                </li>
+                                <li role="presentation" class="acct-logged hide">
+                                    <a role="menuitem" tabindex="-1" href="#options" data-toggle="modal">Options</a>
+                                </li>
+                                <li role="presentation" class="acct-logged hide">
+                                    <a role="menuitem" tabindex="-1" href="#logout" id="logout">Log out</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form id="subscrForm" class="form-inline hide">
+                        <div class="btn-group">
+                            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                Subscription:&nbsp;
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#new" id="subscrNew">New</a></li>
+                                <li id="subscrEdit"><a href="#subscrProfile" data-toggle="modal">Edit</a></li>
+                            </ul>
+                        </div>&nbsp;
+                        <select id="subscrSel" class="hide" name="params[0]"></select>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid" id="main-wrap">
+            <div class="page-header text-center">
+                <h4>Freelance Jobs:
+                    <span class="hide">Default Subscription (no filter)</span>
+                    <span class="hide">Custom Subscription</span>
+                </h4>
+            </div>
+
+            <div id="items">
+                No matching results (yet).
+            </div>
+        </div>
+
+        <div id="auth" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="authLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="authLabel">
+                    <span class="hide">Log in</span>
+                    <span class="hide">Create New Account</span>
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <span class="label label-info">Note:</span>
+                    Your account may be removed after 36 hours of inactivity.
+                    To keep your account active you have to log in or create/edit subscription(s) at least once a day.
+                </div>
+                <form id="authForm" class="form-horizontal">
+                    <input type="hidden" id="authType" value="">
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="loginId">Username</label>
+                            <div class="controls">
+                                <input type="text" name="login[0]" id="loginId">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="loginPwd">Password</label>
+                            <div class="controls">
+                                <input type="password" name="login[1]" id="loginPwd">
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+                <div class="alert hide">
+                    <small>
+                        <span class="hide">Invalid username or password</span>
+                        <span class="hide">Account has not been created due to unknown reason. Try it again later</span>
+                        <span class="hide">Illegal characters in the input data. Username/password must be 3-10 english alphanumeric characters</span>
+                        <span class="hide">Username you have entered is already in use</span>
+                        <span class="hide">Account registration is temporarily closed. Try it again later</span>
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" data-loading-text="...">OK</button>
+            </div>
+        </div>
+
+        <div id="subscrProfile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="profileLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="profileLabel">Subscription Profile</h3>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <input type="hidden" name="params[0]" value="">
+                    <label>Title</label>
+                    <input type="text" name="params[1]" value="">
+                    <fieldset>
+                        <legend>Keywords</legend>
+                        <div>
+                            <label>
+                                <small><i>Enter one or more words (or phrases), each one in a separate line.<br>
+                                <a href="http://www.php.net/manual/en/pcre.pattern.php" target="_blank">PCRE</a> in the form </i><u><b>/pattern/</b></u><i> are also allowed as a keyword.<br>
+                                Prepend a keyword with prefix </i><u><b>~:</b></u><i> to mark it as negative (blacklisted) keyword.<br>
+                                Prepend a keyword with prefix </i><u><b>extra:</b></u><i> to mark it for search in extra content of feed items (e.g. categories).</i><br>
+                                </small>
+                            </label>
+                            <textarea name="params[2]" rows="4"></textarea>
+                        </div>
+                    </fieldset>
+                    <fieldset class="hide">
+                        <legend>Feeds Selection</legend>
+                        <input type="hidden" name="params[3]" value="">
+                        <div id="chkboxset"></div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" data-loading-text="...">Save</button>
+            </div>
+        </div>
+
+        <div id="options" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="optionsLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="optionsLabel">Options</h3>
+            </div>
+            <div class="modal-body">
+                <form id="optionsForm">
+                    <label>Polling interval (sec)</label>
+                    <input type="text" class="optionElem" value="">
+                    <label>Results buffer size (max. number of items per page)</label>
+                    <input type="text" class="optionElem" value="">
+                    <label class="checkbox">
+                        <input type="checkbox" class="optionElem" value="1">
+                        Enable sound notification for a new results
+                    </label>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+
+        <div id="alert" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="alertLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="alertLabel">Message</h3>
+            </div>
+            <div class="modal-body">
+                <span class="hide">Subscription has not been created due to unknown reason</span>
+                <span class="hide">OK</span>
+                <span class="hide">Subscriptions limit for your account is over</span>
+                <span class="hide">Subscription registration is temporarily closed. Try it again later</span>
+                <span class="hide">Unfortunately, subscription profile has not been saved</span>
+                <span class="hide">Subscription profile has been successfully saved</span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+
+        <div id="elemTpls" class="hide">
+            <div class="item">
+                <p>
+                    <span class="item-date"></span>&nbsp;
+                    <a href="#" class="item-title" data-toggle="collapse">Untitled</a>
+                    <a href="#" class="item-link pull-right hide" target="_blank" title="Source link">
+                        <i class="icon-hand-right"></i>
+                    </a>
+                </p>
+                <div class="item-content collapse clearfix"></div>
+            </div>
+            <label class="checkbox">
+                <input type="checkbox" value="">
+                <span></span>&nbsp;
+                <a href="#" target="_blank" title="feed's URL"><i class="icon-hand-right"></i></a>
+            </label>
+            <a class="sound-url" href="assets/sound.*"></a>
+        </div>
+
+        <script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-transition.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-modal.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-button.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-collapse.js"></script>
+        <script src="index.js"></script>
+
+    </body>
+</html>

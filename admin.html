@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>feedFilter Admin Page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="//twitter.github.io/bootstrap/assets/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="//twitter.github.io/bootstrap/assets/css/bootstrap-responsive.css" />
+        <style type="text/css">
+#logged > p {
+    margin-bottom: 30px;
+}
+#profileForm textarea {
+    width: 100%;
+}
+        </style>
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="page-header">
+                <h1><a href="./" target="_blank" title="Index page">feedFilter</a>: Admin Page</h1>
+            </div>
+
+            <div id="unlogged" class="hide">
+                <form id="loginForm" class="form-horizontal">
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="loginId">Login</label>
+                            <div class="controls">
+                                <input type="text" name="admin_login[0]" placeholder="Login">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="loginPwd">Password</label>
+                            <div class="controls">
+                                <input type="password" name="admin_login[1]" placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <button class="btn btn-primary" type="submit">Sign in</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+            <div id="logged" class="hide">
+                <p>
+                    <button class="btn btn-large btn-primary" type="button" data-toggle="modal" data-target="#profile">
+                        Edit Manager Profile
+                    </button>
+                    &nbsp;
+                    <button class="btn btn-large btn-danger" type="button" id="resetScraperStats">
+                        Reset Scraper Run Stats
+                    </button>
+                    <button class="btn btn-large pull-right" type="button" id="logout">
+                        Log out
+                    </button>
+                </p>
+                <hr>
+                <div class="list-cntr pull-left">
+                    <div><h4>No Accounts</h4></div>
+                    <div class="hide">
+                        <h3>Accounts:</h3>
+                        <ul></ul>
+                        <p><button class="btn btn-danger" type="button" data-listno="0">Reset</button></p>
+                    </div>
+                </div>
+                <div class="list-cntr pull-right">
+                    <div><h4>No Subscriptions</h4></div>
+                    <div class="hide">
+                        <h3>Subscriptions:</h3>
+                        <ul></ul>
+                        <p><button class="btn btn-danger" type="button" data-listno="1">Reset</button></p>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+        <div id="profile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="profileLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="profileLabel">Manager Profile</h3>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <fieldset>
+                        <legend>Scraping</legend>
+                        <label>Feed URLs</label>
+                        <textarea name="params[0]" rows="6" cols="80"></textarea>
+                        <label>Feed expiration time - min. value (secs)</label>
+                        <input type="text" name="params[1]" value="">
+                        <label>Feed expiration time - default value (secs)</label>
+                        <input type="text" name="params[2]" value="">
+                        <label>Feed expiration extra time at weekend (%)</label>
+                        <input type="text" name="params[3]" value="">
+                        <label>Feed expiration extra time at night (%)</label>
+                        <input type="text" name="params[4]" value="">
+                        <label>Start of night (offset hours from 0:00)</label>
+                        <input type="text" name="params[5]" value="">
+                        <label>End of night (offset hours from 0:00)</label>
+                        <input type="text" name="params[6]" value="">
+                    </fieldset>
+                    <fieldset>
+                        <legend>Accounts &amp; Subscriptions</legend>
+                        <label>Max. number of accounts</label>
+                        <input type="text" name="params[7]" value="">
+                        <label>Max. number of subscriptions</label>
+                        <input type="text" name="params[8]" value="">
+                        <label>Max. number of subscriptions per account</label>
+                        <input type="text" name="params[9]" value="">
+                        <label>Account expiration time (hours)</label>
+                        <input type="text" name="params[10]" value="">
+                        <label>Subscription expiration time (hours)</label>
+                        <input type="text" name="params[11]" value="">
+                        <label>Feed item expiration time (mins)</label>
+                        <input type="text" name="params[12]" value="">
+                        <label>Feed items buffer size</label>
+                        <input type="text" name="params[13]" value="">
+                        <label>New feed items quota (lower limit)</label>
+                        <input type="text" name="params[14]" value="">
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" data-method="setManagerProfile" data-params="#profileForm">Save changes</button>
+            </div>
+        </div>
+
+        <script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-transition.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-modal.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-button.js"></script>
+        <script src="//twitter.github.io/bootstrap/assets/js/bootstrap-collapse.js"></script>
+
+        <script>
+$(function() {
+    var URL_CMD = 'admin.php?name=';
+    var A_CMD = ['auth', 'setManagerProfile', 'resetScraperRunStats', 'resetAccounts', 'resetSubscrs'];
+    var A_ALLPROPS = ['aFeedUrls', 'aFeedTitles', 'aFeedTimezones', 'aFeedQuotas', 'nFeedExpMin', 'nFeedExpDeft', 'nFeedExpAddWeek', 'nFeedExpAddNite', 'nFeedNiteStart', 'nFeedNiteEnd', 'nAccountsMax', 'nSubscrsMax', 'nSubscrsPerAcct', 'nAccountExp', 'nSubscrExp', 'nSubscrItemsExp', 'nSubscrItemsBuff', 'nSubscrItemsNew'];
+    var N_ARRPROPS = 4;
+    var B_AJAXCACHE = false;
+    var B_STAMP_ETAG = true;
+    var INT_UPD = 300000;
+
+    var urlProfile = '';
+    var urlAccts = '';
+    var urlSubs = '';
+    var aAccts = [];
+    var aSubscrs = [];
+    var sStampAccts = 0;
+    var sStampSubs = 0;
+    var iUpdate = 0;
+    var nIdTimer = 0;
+
+    queryAuth('')
+    .complete(function() {
+        urlProfile? queryUpdate() : toggleUnlogged();
+    });
+
+    $('#loginForm').submit(function() {
+        queryAuth($(this).serialize())
+        .complete(function() {
+            urlProfile? queryUpdate() : alert('Incorrect login or password');
+        });
+        return false;
+    });
+
+    $('#logout').click(function() {
+        if (!confirm('Are you sure?')) return false;
+        var oBtn = $(this);
+        oBtn.addClass('disabled');
+        $.ajax({
+            url: URL_CMD, type: 'POST',
+            data: 'logout=1',
+            dataType: 'text'
+        })
+        .complete(function() {
+            oBtn.removeClass('disabled');
+            toggleUnlogged();
+        });
+        return false;
+    });
+
+    $('#profile').on('show', function() {
+        resetProfile();
+        if (!urlProfile) return;
+        queryStatic(urlProfile, outProfile);
+    });
+
+    $('#profile button.btn-primary').click(function() {
+        $('#profile').modal('hide');
+        queryMethod(A_CMD[1], $('#profileForm').serialize());
+    });
+
+    $('#resetScraperStats').click(function() {
+        if (!confirm('Are you sure?')) return false;
+        stopUpdate();
+        var oBtn = $(this);
+        oBtn.addClass('disabled');
+        queryMethod(A_CMD[2], '')
+        .complete(function() {
+            queryUpdate();
+            oBtn.removeClass('disabled');
+        });
+        return false;
+    });
+
+    $('div.list-cntr button.btn').click(function() {
+        if (!confirm('Are you sure?')) return false;
+        stopUpdate();
+        var oBtn = $(this);
+        oBtn.addClass('disabled');
+        var iList = oBtn.data('listno');
+        queryMethod(A_CMD[iList?4:3], '')
+        .complete(function() {
+            queryUpdate();
+            oBtn.removeClass('disabled');
+        });
+        return false;
+    });
+
+
+    function queryAuth(sData) {
+        return $.ajax({
+            url: URL_CMD+ A_CMD[0],
+            type: 'POST',
+            data: sData? sData: '',
+            dataType: 'json',
+            success: setAcct
+        });
+    }
+
+    function setAcct(aData) {
+        if (!(aData && aData.length == 3)) return;
+        urlProfile = aData[0];
+        urlAccts = aData[1];
+        urlSubs = aData[2];
+        toggleLogged();
+    }
+
+    function queryMethod(sMethod, sData) {
+        var bOk = false;
+        return $.ajax({
+            url: URL_CMD+ sMethod,
+            type: 'POST',
+            data: sData,
+            dataType: 'text',
+            success: function(txt) {
+                if (txt == '1') bOk = true;
+            }
+        })
+        .complete(function() {
+            alert('Action '+(bOk?'completed':'failed'));
+        });
+    }
+
+    function queryUpdate() {
+        stopUpdate();
+        if (urlAccts)
+        queryStatic(urlAccts, function(aData, nStatus, oXhr) {
+            var s = getStamp(oXhr);
+            if (s == sStampAccts) return;
+            sStampAccts = s;
+            if (!(aData && typeof aData == 'object')) return;
+            aAccts = aData.length? aData : [];
+            outList(0, aAccts);
+        });
+        if (urlSubs)
+        queryStatic(urlSubs, function(aData, nStatus, oXhr) {
+            var s = getStamp(oXhr);
+            if (s == sStampSubs) return;
+            sStampSubs = s;
+            if (!(aData && typeof aData == 'object')) return;
+            aSubscrs = aData.length? aData : [];
+            var arr = aSubscrs, n = aAccts.length, id;
+            for (var i in arr)
+                if ((id = arr[i]) < n) arr[i] = aAccts[id];
+            outList(1, arr);
+        });
+        nIdTimer= setTimeout(queryUpdate, INT_UPD);
+    }
+
+    function stopUpdate() {
+        if (nIdTimer) clearTimeout(nIdTimer);
+    }
+
+    function queryStatic(sUrl, fnSuccess) {
+        return $.ajax({
+            url: sUrl,
+            type: 'GET',
+            dataType: 'json',
+            cache: B_AJAXCACHE,
+            success: fnSuccess
+        });
+    }
+
+    function getStamp(oXhr) {
+        return B_STAMP_ETAG? getStampEtag(oXhr) : getStampStd(oXhr);;
+    }
+
+    function getStampStd(oXhr) {
+        if (!oXhr) return 0;
+        var s = oXhr.getResponseHeader('Last-Modified');
+        return s? Date.parse(s) : 0;
+    }
+
+    function getStampEtag(oXhr) {
+        if (!oXhr) return 0;
+        var s = oXhr.getResponseHeader('ETag');
+        return s? s : '';
+    }
+
+    function toggleLogged() {
+        $('#unlogged').addClass('hide');
+        $('#logged').removeClass('hide');
+    }
+
+    function toggleUnlogged() {
+        $('#unlogged').removeClass('hide');
+        $('#logged').addClass('hide');
+    }
+
+    function resetProfile() {
+        $('#profileForm textarea,input').val('');
+    }
+
+    function outProfile(oData) {
+        if (!oData || !(A_ALLPROPS[0] in oData)) return;
+        var oForm = $('#profileForm');
+        if (!oForm.length) return;
+        var arr = oData[A_ALLPROPS[0]];
+        if (arr.length)
+            oForm.find('textarea').val(arr.join("\n"));
+        var aElems = oForm.find('input');
+        if (!aElems.length) return;
+        for (var n = A_ALLPROPS.length, i = N_ARRPROPS; i < n; i++) {
+            if (oData[A_ALLPROPS[i]])
+                aElems.eq(i- N_ARRPROPS).val(oData[A_ALLPROPS[i]]);
+        }
+    }
+
+    function outList(iList, aList) {
+        var aListCntrs = $('div.list-cntr');
+        if (!aListCntrs.length) return;
+        var oDiv = aListCntrs.eq(iList);
+        var oCntr = oDiv.find('ul');
+        if (!oCntr.length) return;
+        oCntr.empty();
+        for (var i in aList) {
+            $("<li></li>").text('#'+ i+ ' - '+aList[i])
+            .appendTo(oCntr);
+        }
+        oDiv.children().addClass('hide')
+        .eq(aList.length?1:0).removeClass('hide');
+    }
+
+});
+        </script>
+
+    </body>
+</html>

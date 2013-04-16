@@ -1,0 +1,4 @@
+AddType "audio/mpeg" .mp3
+AddType "audio/ogg" .ogg
+# ExpiresActive on
+# ExpiresDefault "access plus 1 year"
