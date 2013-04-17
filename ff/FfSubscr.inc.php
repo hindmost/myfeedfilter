@@ -149,6 +149,8 @@ class FfSubscr extends Prof_FfSubscr
             $this->aFeedIds = 0;
         $this->setLastVisit();
         $this->saveProfile();
+        $this->aResult = array();
+        $this->saveResult();
         return true;
     }
 
@@ -357,12 +359,7 @@ class FfSubscr extends Prof_FfSubscr
     }
 
     protected function saveResult() {
-        if (!count($this->aResult)) return;
         FfShared::saveVar($this->getFilename(self::FILE_RET), $this->aResult);
-        $out = '';
-        foreach ($this->aResult as $o_item) {
-            $out .= ','. $o_item->toJson();
-        }
         FfShared::saveJson($this->getFilename(self::FILE_JSON_RET),
             $this->getResultJson()
         );

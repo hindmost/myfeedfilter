@@ -487,7 +487,7 @@ $(function() {
         oForm.find('textarea,input').val('');
         oForm.find('#chkboxset input').prop('checked', false);
         var i = bNew? aSubscrIds.length-1 : iSubscr;
-        oForm.find('input[type=hidden]').eq(0).val(i);
+        oForm.find('input[type=hidden]').eq(0).val(aSubscrIds[i]);
     }
 
     function outProfile(oData) {

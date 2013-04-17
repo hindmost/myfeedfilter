@@ -115,9 +115,12 @@ class FfManagerBase extends Prof_FfManager
         foreach (FfShared::strToArr($sFeeds, true) as $s) {
             $arr = FfShared::strToArr($s);
             $a_urls[] = $arr[0];
-            $a_zones[] = (count($arr) > 1)? $arr[1] : 0;
-            $a_quots[] = (count($arr) > 2)? $arr[2] : 0;
+            if (count($arr) > 1) $a_zones[] = $arr[1];
+            if (count($arr) > 2) $a_quots[] = $arr[2];
         }
+        $n_feeds = count($a_urls);
+        if (count($a_zones) != $n_feeds) $a_zones = 0;
+        if (count($a_quots) != $n_feeds) $a_quots = 0;
         array_splice($a_args, 0, 1, array($a_urls, $a_zones, $a_quots));
         $b_ok = call_user_func_array(array($this, 'setProfile'), $a_args);
         if (!$b_ok) return false;
