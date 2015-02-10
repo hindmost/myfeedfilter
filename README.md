@@ -3,7 +3,7 @@ my feedFilter
 
 my feedFilter is just a simple tool that allows you automatically filter RSS feeds from your favorite sources, so you only see what you really interested in.
 
-[Demo] (http://demos.savreen.com/feedfilter/) | [Screencast] (http://youtu.be/OKJ3lqLyupw)
+[Screencast] (http://youtu.be/OKJ3lqLyupw)
 
 
 Features
